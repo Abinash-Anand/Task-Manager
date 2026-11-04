@@ -1,0 +1,102 @@
+@switch (cardComponent().cardType) {
+  
+  @case ('taskOverview') {
+    <div class="p-4 border border-black max-w-xs">
+      <!-- Heading -->
+      <h4 class="font-bold">
+        {{ cardComponent().cardHeading }}
+      </h4>
+      
+      <!-- Metrics -->
+      <div class="text-2xl font-bold my-2">
+        {{ cardComponent().cardMetrics ?? 0 }}
+      </div>
+      
+      <!-- Description -->
+      <p class="text-sm">
+        {{ cardComponent().cardDescription }}
+      </p>
+    </div>
+  }
+
+  @case ('taskList') {
+    <div class="p-4 border border-black w-full flex flex-col gap-4">
+      <!-- Layout Card Header Details -->
+      <div>
+        <h3 class="font-bold text-lg">
+          {{ cardComponent().cardHeading }}
+        </h3>
+        <p class="text-xs text-gray-500">
+          {{ cardComponent().cardDescription }}
+        </p>
+      </div>
+
+      <!-- Nested Task List Generation Loop -->
+      <div class="flex flex-col gap-4">
+        @for (task of cardComponent().cardTasks; track task.id) {
+          <div class="flex flex-col border-b border-gray-100 pb-3 last:border-b-0">
+            
+            <!-- Row 1: Title & Status -->
+            <div class="flex justify-between items-baseline">
+              <span class="font-semibold text-base" 
+                [class.line-through]="task.status === 'completed'" 
+                [class.text-gray-400]="task.status === 'completed'">
+                {{ task.title }}
+              </span>
+              <span class="text-sm font-medium" 
+                [class.text-green-600]="task.status === 'completed'" 
+                [class.text-amber-600]="task.status !== 'completed'">
+                {{ task.status === 'completed' ? 'Completed' : 'Pending' }}
+              </span>
+            </div>
+
+            <!-- Row 2: Description -->
+            <p class="text-sm my-1 text-gray-700" [class.text-gray-400]="task.status === 'completed'">
+              {{ task.description }}
+            </p>
+
+            <!-- Row 3: Priority Badges & Meta -->
+            <div class="flex justify-between items-center text-xs mt-1">
+              <div>
+                @switch (task.priority) {
+                  @case ('low') {
+                    <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium">Low priority</span>
+                  }
+                  @case ('medium') {
+                    <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-medium">Medium priority</span>
+                  }
+                  @case ('high') {
+                    <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">High priority</span>
+                  }
+                }
+              </div>
+              <span class="text-gray-400">No due date</span>
+            </div>
+
+          </div>
+        } @empty {
+          <p class="text-sm italic text-gray-400">No Tasks available</p>
+        }
+      </div>
+    </div>
+  }
+
+  @default {
+    <div class="p-4 border border-black max-w-xs">
+      <!-- Heading -->
+      <h4 class="font-bold">
+        {{ cardComponent().cardHeading }}
+      </h4>
+      
+      <!-- Description -->
+      <div class="text-2xl font-bold my-2">
+        {{ cardComponent().cardDescription }}
+      </div>
+      
+      <!-- Action Button -->
+      <button type="button" class="border border-black px-3 py-1" (click)="cardActionButton()">
+        {{ cardComponent().cardActions?.buttonLabel }}
+      </button>
+    </div>
+  }
+}
