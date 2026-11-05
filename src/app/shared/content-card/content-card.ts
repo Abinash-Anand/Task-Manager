@@ -1,8 +1,10 @@
 import { Component, input, output } from '@angular/core';
 import { GenericCardComponent } from '../../interface/generic-card-component';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-content-card',
+  imports:[DatePipe],
   standalone: true,
   templateUrl: './content-card.html',
   styleUrl: './content-card.scss',

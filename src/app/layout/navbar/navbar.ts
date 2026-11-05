@@ -1,13 +1,12 @@
 import { Component, computed, signal } from '@angular/core';
 import { UserCard } from '../user-card/user-card';
 import { Task } from '../../interface/task';
-import { NgClass } from '@angular/common';
 import { ContentCard } from '../../shared/content-card/content-card';
 import { GenericCardComponent } from '../../interface/generic-card-component';
 
 @Component({
   selector: 'app-navbar',
-  imports: [UserCard, NgClass, ContentCard],
+  imports: [UserCard, ContentCard],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
@@ -16,16 +15,16 @@ export class Navbar {
   userName = signal<string>('Alex')
   greetingsEventValue = signal<string>('')
   notificationCount = signal<number>(0)
-  
+  date = signal<string>(new Date(2026, 2,10,2,30).toString());
   tasks = signal<Task[]>(
     [{id:'1', title:'Learn Angular',description:'this is a angular task and should be done as it is very important concept'
-        ,priority:'high',status:'completed', dueDate:null, createdAt:'dateWillGetFromAPI', updatedAt:'Will get from API' , cardType:'taskList'},
+        ,priority:'high',status:'completed', dueDate:this.date(), createdAt:'dateWillGetFromAPI', updatedAt:'Will get from API' , cardType:'taskList'},
       {id:'2', title:'Learn Signals',description:'this is a angular task and should be done as it is very important concept'
-          ,priority:'medium',status:'pending', dueDate:null, createdAt:'dateWillGetFromAPI', updatedAt:'Will get from API' , cardType:'taskList'},
+          ,priority:'medium',status:'pending', dueDate:this.date(), createdAt:'dateWillGetFromAPI', updatedAt:'Will get from API' , cardType:'taskList'},
       {id:'3', title:'Build Dashboard',description:'this is a angular task and should be done as it is very important concept'
-          ,priority:'low',status:'pending', dueDate:null, createdAt:'dateWillGetFromAPI', updatedAt:'Will get from API' , cardType:'taskList'},
+          ,priority:'low',status:'pending', dueDate:this.date(), createdAt:'dateWillGetFromAPI', updatedAt:'Will get from API' , cardType:'taskList'},
       {id:'4', title:'Practise TypeScript',description:'this is a angular task and should be done as it is very important concept'
-          ,priority:'high',status:'completed', dueDate:null, createdAt:'dateWillGetFromAPI', updatedAt:'Will get from API' , cardType:'taskList'},
+          ,priority:'high',status:'completed', dueDate:'', createdAt:'dateWillGetFromAPI', updatedAt:'Will get from API' , cardType:'taskList'},
     ]
   )
 

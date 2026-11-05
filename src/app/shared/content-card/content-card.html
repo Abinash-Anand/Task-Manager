@@ -70,7 +70,11 @@
                   }
                 }
               </div>
-              <span class="text-gray-400">No due date</span>
+              <span class="text-gray-400">@if(task.dueDate !== '' && task.dueDate !== null){
+                {{ task.dueDate | date:'medium'}}
+            }@else {
+                No due date
+            }</span>
             </div>
 
           </div>
