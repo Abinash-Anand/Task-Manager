@@ -18,7 +18,9 @@
 
   <!-- Primary Task List Showcase Block -->
   <div class="mb-6">
-    <app-content-card [cardComponent]="taskListCardDataObject()"></app-content-card>
+    <app-content-card [cardComponent]="taskListCardDataObject()"
+      (actionClick)="toggleTaskStatus($event)"
+    ></app-content-card>
   </div>
 
   <!-- Dashboard Functional Operation Controls Panel -->

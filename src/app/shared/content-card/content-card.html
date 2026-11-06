@@ -20,21 +20,47 @@
   }
 
   @case ('taskList') {
-    <div class="p-4 border border-black w-full flex flex-col gap-4">
-      <!-- Layout Card Header Details -->
-      <div>
-        <h3 class="font-bold text-lg">
-          {{ cardComponent().cardHeading }}
-        </h3>
-        <p class="text-xs text-gray-500">
-          {{ cardComponent().cardDescription }}
-        </p>
-      </div>
-
+  <div class="p-4 border border-black w-full flex flex-col gap-4">
+  <ng-container
+      *ngTemplateOutlet = "taskListHeader; context:{$implicit: cardComponent()}"
+  />
       <!-- Nested Task List Generation Loop -->
       <div class="flex flex-col gap-4">
         @for (task of cardComponent().cardTasks; track task.id) {
-          <div class="flex flex-col border-b border-gray-100 pb-3 last:border-b-0">
+          <ng-container
+            *ngTemplateOutlet="taskCard ; context:{$implicit: task}"
+          />
+        } @empty {
+          <p class="text-sm italic text-gray-400">No Tasks available</p>
+        }
+      </div>
+    </div>
+  }
+
+  @default {
+    <div class="p-4 border border-black max-w-xs">
+      <ng-container
+        *ngTemplateOutlet = "taskListHeader; context:{$implicit: cardComponent()}"
+      />
+    </div>
+  }
+}
+
+<ng-template #taskListHeader let-cardComponent>
+   <div>
+        <h3 class="font-bold text-lg">
+          {{ cardComponent.cardHeading }}
+        </h3>
+        <p class="text-xs text-gray-500">
+          {{ cardComponent.cardDescription }}
+        </p>
+      </div>
+</ng-template>
+
+
+<!---Resuable component 2 taskCards-->
+<ng-template #taskCard let-task >
+            <div appAppTaskHover class="flex flex-col border-b border-gray-100 pb-3 last:border-b-0 ">
             
             <!-- Row 1: Title & Status -->
             <div class="flex justify-between items-baseline">
@@ -54,53 +80,37 @@
             <p class="text-sm my-1 text-gray-700" [class.text-gray-400]="task.status === 'completed'">
               {{ task.description }}
             </p>
-
+            
             <!-- Row 3: Priority Badges & Meta -->
             <div class="flex justify-between items-center text-xs mt-1">
-              <div>
-                @switch (task.priority) {
-                  @case ('low') {
-                    <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium">Low priority</span>
-                  }
-                  @case ('medium') {
-                    <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-medium">Medium priority</span>
-                  }
-                  @case ('high') {
-                    <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">High priority</span>
-                  }
-                }
-              </div>
-              <span class="text-gray-400">@if(task.dueDate !== '' && task.dueDate !== null){
-                {{ task.dueDate | date:'medium'}}
+            <ng-container *ngTemplateOutlet="taskPriority; context: { $implicit: task }" />
+            <span class="text-gray-400">@if(task.dueDate !== '' && task.dueDate !== null){
+              {{ task.dueDate | date:'medium'}}
             }@else {
                 No due date
             }</span>
             </div>
+              @if (task.status  === 'completed') {
+              <ng-container *ngTemplateOutlet = 'taskActionButton; context:{task:task, label:"Re-open"}' />
+            }@else {
+              <ng-container *ngTemplateOutlet = 'taskActionButton; context:{task:task, label:"Mark as Completed"}'/>
+            }
 
           </div>
-        } @empty {
-          <p class="text-sm italic text-gray-400">No Tasks available</p>
-        }
-      </div>
-    </div>
-  }
+</ng-template>
+<!-------------Task Priority -------->
+<ng-template #taskPriority let-task>
+  <span 
+    class="px-2 py-0.5 rounded"
+    [class]="PRIORITY_CONFIG[task.priority]?.classes"
+  >
+    {{ PRIORITY_CONFIG[task.priority]?.label }}
+  </span>
+</ng-template>
 
-  @default {
-    <div class="p-4 border border-black max-w-xs">
-      <!-- Heading -->
-      <h4 class="font-bold">
-        {{ cardComponent().cardHeading }}
-      </h4>
-      
-      <!-- Description -->
-      <div class="text-2xl font-bold my-2">
-        {{ cardComponent().cardDescription }}
-      </div>
-      
-      <!-- Action Button -->
-      <button type="button" class="border border-black px-3 py-1" (click)="cardActionButton()">
-        {{ cardComponent().cardActions?.buttonLabel }}
-      </button>
-    </div>
-  }
-}
+<!--------Action Button-------->
+<ng-template #taskActionButton let-task="task" let-buttonLabel ="label">
+  <button class="rounded-md bg-blue-300 p-1 my-2 "
+    (click)="taskButtonAction(task)"
+  >{{buttonLabel}}</button>
+</ng-template>

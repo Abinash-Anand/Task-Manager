@@ -91,4 +91,19 @@ export class Navbar {
   displayGreetings(value: string) {
     this.greetingsEventValue.set(value)
   }
+toggleTaskStatus(taskId: string): void {
+  this.tasks.update(currentTasks =>
+    currentTasks.map(task =>
+      task.id === taskId
+        ? {
+            ...task,
+            status: task.status === 'completed'
+              ? 'pending'
+              : 'completed',
+            updatedAt: new Date().toISOString()
+          }
+        : task
+    )
+  );
+}
 }
