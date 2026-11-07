@@ -3,7 +3,6 @@ import { UserCard } from '../user-card/user-card';
 import { Task } from '../../interface/task';
 import { ContentCard } from '../../shared/content-card/content-card';
 import { GenericCardComponent } from '../../interface/generic-card-component';
-
 @Component({
   selector: 'app-navbar',
   imports: [UserCard, ContentCard],
@@ -27,7 +26,6 @@ export class Navbar {
           ,priority:'high',status:'completed', dueDate:'', createdAt:'dateWillGetFromAPI', updatedAt:'Will get from API' , cardType:'taskList'},
     ]
   )
-
   totalTasks = computed(() => this.tasks().length)
   pendingTasks = computed(() => this.tasks().filter((task) => task.status === 'pending').length)
   completedTasks = computed(() => this.totalTasks() - this.pendingTasks())
@@ -79,22 +77,14 @@ export class Navbar {
       })
     )
   }
-
-  increaseNotifications() {
-    this.notificationCount.update(currentValue => ++currentValue)
-  }
-
-  resetNotification() {
-    this.notificationCount.set(0)
-  }
-
   displayGreetings(value: string) {
     this.greetingsEventValue.set(value)
   }
-toggleTaskStatus(taskId: string): void {
-  this.tasks.update(currentTasks =>
+  
+updateTaskData(event:{taskId:string,eventLabel:string}):void{
+    this.tasks.update(currentTasks =>
     currentTasks.map(task =>
-      task.id === taskId
+      task.id === event.taskId
         ? {
             ...task,
             status: task.status === 'completed'
@@ -105,5 +95,27 @@ toggleTaskStatus(taskId: string): void {
         : task
     )
   );
+}
+
+deleteTaskFromTaskList(event:{taskId:string,eventLabel:string}){
+  this.tasks.update(currentTasks=>
+    currentTasks.filter(task=> task.id !== event.taskId)
+  )
+}
+
+toggleTaskStatus(event:{taskId:string,eventLabel:string}): void {
+  switch(event.eventLabel){
+    case 'Mark as Completed':
+      case 'Re-open':
+        this.updateTaskData(event)
+    break;
+    case 'Delete':
+      this.deleteTaskFromTaskList(event)
+      break
+
+      default:
+        break
+  }
+
 }
 }

@@ -7,9 +7,5 @@ import { Component, input, output } from '@angular/core';
   styleUrl: './user-card.scss',
 })
 export class UserCard {
-  userName = input.required<string>()
-  greetings = output<string>()
-  sendGreetings(){
-    this.greetings.emit(`Greetings..., I am ${this.userName()}`)
-  }
+
 }

@@ -19,23 +19,24 @@
     </div>
   }
 
-  @case ('taskList') {
-  <div class="p-4 border border-black w-full flex flex-col gap-4">
-  <ng-container
-      *ngTemplateOutlet = "taskListHeader; context:{$implicit: cardComponent()}"
-  />
-      <!-- Nested Task List Generation Loop -->
-      <div class="flex flex-col gap-4">
-        @for (task of cardComponent().cardTasks; track task.id) {
-          <ng-container
-            *ngTemplateOutlet="taskCard ; context:{$implicit: task}"
-          />
-        } @empty {
-          <p class="text-sm italic text-gray-400">No Tasks available</p>
-        }
-      </div>
+    @case ('taskList') {
+  <div class="p-4 border border-black w-full grid gap-4">
+    <ng-container
+      *ngTemplateOutlet="taskListHeader; context:{$implicit: cardComponent()}"
+    />
+    <!-- Nested Task List Generation Loop -->
+    <div class="grid gap-4">
+      @for (task of cardComponent().cardTasks; track task.id) {
+        <ng-container
+          *ngTemplateOutlet="taskCard ; context:{$implicit: task}"
+        />
+      } @empty {
+        <p class="text-sm italic text-gray-400">No Tasks available</p>
+      }
     </div>
+  </div>
   }
+
 
   @default {
     <div class="p-4 border border-black max-w-xs">
@@ -59,45 +60,62 @@
 
 
 <!---Resuable component 2 taskCards-->
-<ng-template #taskCard let-task >
-            <div appAppTaskHover class="flex flex-col border-b border-gray-100 pb-3 last:border-b-0 ">
-            
-            <!-- Row 1: Title & Status -->
-            <div class="flex justify-between items-baseline">
-              <span class="font-semibold text-base" 
-                [class.line-through]="task.status === 'completed'" 
-                [class.text-gray-400]="task.status === 'completed'">
-                {{ task.title }}
-              </span>
-              <span class="text-sm font-medium" 
-                [class.text-green-600]="task.status === 'completed'" 
-                [class.text-amber-600]="task.status !== 'completed'">
-                {{ task.status === 'completed' ? 'Completed' : 'Pending' }}
-              </span>
-            </div>
+<ng-template #taskCard let-task>
+  <div appAppTaskHover class="grid grid-cols-[1.5fr_minmax(95px,1fr)_3.5fr_1.5fr_150px] items-center gap-4 border-b border-gray-100 py-3 last:border-b-0">
+    
+    <!-- Column 1: Title -->
+    <span class="font-semibold text-base" 
+      [class.line-through]="task.status === 'completed'" 
+      [class.text-gray-400]="task.status === 'completed'">
+      {{ task.title }}
+    </span>
 
-            <!-- Row 2: Description -->
-            <p class="text-sm my-1 text-gray-700" [class.text-gray-400]="task.status === 'completed'">
-              {{ task.description }}
-            </p>
-            
-            <!-- Row 3: Priority Badges & Meta -->
-            <div class="flex justify-between items-center text-xs mt-1">
-            <ng-container *ngTemplateOutlet="taskPriority; context: { $implicit: task }" />
-            <span class="text-gray-400">@if(task.dueDate !== '' && task.dueDate !== null){
-              {{ task.dueDate | date:'medium'}}
-            }@else {
-                No due date
-            }</span>
-            </div>
-              @if (task.status  === 'completed') {
-              <ng-container *ngTemplateOutlet = 'taskActionButton; context:{task:task, label:"Re-open"}' />
-            }@else {
-              <ng-container *ngTemplateOutlet = 'taskActionButton; context:{task:task, label:"Mark as Completed"}'/>
-            }
+    <!-- Column 2: Status -->
+    <span class="text-sm font-medium" 
+      [class.text-green-600]="task.status === 'completed'" 
+      [class.text-amber-600]="task.status !== 'completed'">
+      {{ task.status === 'completed' ? 'Completed' : 'Pending' }}
+    </span>
 
-          </div>
+    <!-- Column 3: Description -->
+    <p class="text-sm text-gray-700" [class.text-gray-400]="task.status === 'completed'">
+      {{ task.description }}
+    </p>
+    
+    <!-- Column 4: Priority Badges & Meta -->
+    <div class="text-xs">
+      <ng-container *ngTemplateOutlet="taskPriority; context: { $implicit: task }" />
+      <div>
+        <span class="text-gray-400">
+          @if(task.dueDate !== '' && task.dueDate !== null){
+            {{ task.dueDate | date:'medium'}}
+          }@else {
+            No due date
+          }
+        </span>
+      </div>
+    </div>
+
+    <!-- Column 5: Action Buttons Stacked (Grid) -->
+      <div class="grid gap-1.5 whitespace-nowrap">
+        <ng-container
+          *ngTemplateOutlet="taskActionButton; context: {
+            task: task,
+            action: task.status === 'completed' ? 'reOpen' : 'markAsCompleted'
+          }"
+        />
+        <ng-container
+          *ngTemplateOutlet="taskActionButton; context: {
+            task: task,
+            action: 'delete'
+          }"
+        />
+      </div>
+  </div>
 </ng-template>
+
+
+
 <!-------------Task Priority -------->
 <ng-template #taskPriority let-task>
   <span 
@@ -109,8 +127,10 @@
 </ng-template>
 
 <!--------Action Button-------->
-<ng-template #taskActionButton let-task="task" let-buttonLabel ="label">
-  <button class="rounded-md bg-blue-300 p-1 my-2 "
-    (click)="taskButtonAction(task)"
-  >{{buttonLabel}}</button>
+<ng-template #taskActionButton let-task="task" let-action="action">
+  <button
+    type="button"
+    [appActionButton]="action"
+    (click)="taskButtonAction({task, action})">
+  </button>
 </ng-template>
