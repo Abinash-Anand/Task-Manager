@@ -131,6 +131,6 @@
   <button
     type="button"
     [appActionButton]="action"
-    (click)="taskButtonAction({task, action})">
+    (click)="taskButtonAction({task.taskId, action})">
   </button>
 </ng-template>
